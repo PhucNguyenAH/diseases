@@ -247,6 +247,7 @@ def multi_acc(y_pred, y_test):
 print("Begin training.")
 
 last_loss = 1000
+trigger_times = 0
 for epoch in range(1, EPOCHS+1):
 
     # TRAINING
