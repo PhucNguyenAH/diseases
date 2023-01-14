@@ -26,27 +26,27 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-with open('data/train_bin.npy', 'rb') as f:
+with open('data/train.npy', 'rb') as f:
     x_train = np.load(f)
-with open('data/train_bin_target.npy', 'rb') as f:
+with open('data/train_target.npy', 'rb') as f:
     y_train = np.load(f)
 
-with open('data/val_bin.npy', 'rb') as f:
+with open('data/val.npy', 'rb') as f:
     x_test = np.load(f)
-with open('data/val_bin_target.npy', 'rb') as f:
+with open('data/val_target.npy', 'rb') as f:
     y_test = np.load(f)
 
 x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
 
 # x_train, x_test, y_train, y_test = torch.from_numpy(x_train), torch.from_numpy(x_test), torch.from_numpy(y_train).type(torch.LongTensor), torch.from_numpy(y_test).type(torch.LongTensor)
 
-model_file_path = "checkpoints/ckp_bin.pt"
-checkpoint_last_path="checkpoints/ckp_bin_last.pt"
+model_file_path = "checkpoints/ckp.pt"
+checkpoint_last_path="checkpoints/ckp_last.pt"
 
 train_acc_MAX=0
 # val_acc_MAX = 0
 best_f1_score = 0
-EPOCHS = 2000
+EPOCHS = 10000
 batch_size = 128
 trainloader = []
 testloader = []
@@ -70,7 +70,7 @@ n_hidden_1 = 8192
 # n_hidden_4 = 128
 # n_hidden_5 = 32
 
-num_classes = 2
+num_classes = 6
 
 class ClassifierDataset(Dataset):
     
@@ -244,7 +244,9 @@ def multi_acc(y_pred, y_test):
 
 print("Begin training.")
 
-
+last_loss = 0
+trigger_times = 0
+patience = 5 
 for epoch in tqdm(range(1, EPOCHS+1)):
 
     # TRAINING
@@ -316,6 +318,7 @@ for epoch in tqdm(range(1, EPOCHS+1)):
     #     torch.save(state, model_file_path)
     #     train_acc_MAX = accTrain_e
     #     val_acc_MAX = accVal_e
+    current_loss = val_epoch_loss/len(testloader)
     if f1 > best_f1_score:
         best_f1_score = f1
         state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': best_f1_score}
@@ -324,6 +327,16 @@ for epoch in tqdm(range(1, EPOCHS+1)):
     # print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | Train Acc: {train_epoch_acc/len(trainloader):.3f}| Val Acc: {val_epoch_acc/len(testloader):.3f}')
 
     print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
+    if current_loss > last_loss:
+        trigger_times += 1
+        print('Trigger Times:', trigger_times)
+
+        if trigger_times >= patience:
+            print(f'Early stopping at epoch {epoch}!')
+            break
+    else:
+        trigger_times = 0
+        last_loss = current_loss
 state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': f1}
 torch.save(state, checkpoint_last_path)
 print('Finished Training')

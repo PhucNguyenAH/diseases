@@ -248,6 +248,7 @@ print("Begin training.")
 
 last_loss = 1000
 trigger_times = 0
+patience = 5 
 for epoch in range(1, EPOCHS+1):
 
     # TRAINING
@@ -318,7 +319,8 @@ for epoch in range(1, EPOCHS+1):
     #     torch.save(state, model_file_path)
     #     train_acc_MAX = accTrain_e
     #     val_acc_MAX = accVal_e
-    if f1 >= best_f1_score:
+    current_loss = val_epoch_loss/len(testloader)
+    if f1 >= best_f1_score and current_loss < last_loss:
         best_f1_score = f1
         state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': best_f1_score}
         torch.save(state, model_file_path)
@@ -326,7 +328,7 @@ for epoch in range(1, EPOCHS+1):
     # print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | Train Acc: {train_epoch_acc/len(trainloader):.3f}| Val Acc: {val_epoch_acc/len(testloader):.3f}')
     if epoch%50==0:
         print(f'Epoch {epoch+0:04}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
-    current_loss = val_epoch_loss/len(testloader)
+
     if current_loss > last_loss:
         last_loss = current_loss 
         trigger_times += 1
