@@ -33,3 +33,4 @@
 2023-01-14,10:26:17 - train.py - line:344 - INFO:	best f1 score:0.8532608695652173
 2023-01-14,10:28:42 - train.py - line:344 - INFO:	best f1 score:0.9333333333333333
 2023-01-14,10:32:35 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
+2023-01-14,13:03:45 - trainBin.py - line:346 - INFO:	best f1 score:0.8772727272727274
