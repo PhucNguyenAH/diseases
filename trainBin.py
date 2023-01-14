@@ -100,41 +100,41 @@ testloader = DataLoader(dataset=test_dataset, batch_size=1)
 #     testloader.append([i,j])
 # testloader = torch.utils.data.DataLoader(testloader, shuffle=True, batch_size=batch_size)
 
-class AutoscaleFocalLoss:
-    def __init__(self, threshold):
-        self.threshold = threshold
+# class AutoscaleFocalLoss:
+#     def __init__(self, threshold):
+#         self.threshold = threshold
     
-    def gamma(self, logits):
-        return self.threshold/2 * (torch.cos(np.pi*(logits+1)) + 1)
+#     def gamma(self, logits):
+#         return self.threshold/2 * (torch.cos(np.pi*(logits+1)) + 1)
 
-    def __call__(self, logits, labels):
-        labels = F.one_hot(labels, 2)
+#     def __call__(self, logits, labels):
+#         labels = F.one_hot(labels, 2)
         
-        assert logits.shape == labels.shape, \
-                "Mismatch in shape, logits.shape: {} - labels.shape: {}".format(logits.shape, labels.shape)
-        logits =  F.softmax(logits, dim=-1)
-        CE = - labels * torch.log(logits)
-        loss = ((1 - logits)**self.gamma(logits)) * CE
-        loss = torch.sum(loss, dim=-1).mean()
-        return loss
+#         assert logits.shape == labels.shape, \
+#                 "Mismatch in shape, logits.shape: {} - labels.shape: {}".format(logits.shape, labels.shape)
+#         logits =  F.softmax(logits, dim=-1)
+#         CE = - labels * torch.log(logits)
+#         loss = ((1 - logits)**self.gamma(logits)) * CE
+#         loss = torch.sum(loss, dim=-1).mean()
+#         return loss
 
 
-def calculate_preference_loss(logits, targets, mode='train'):
+# def calculate_preference_loss(logits, targets, mode='train'):
 
-    ##Define loss function
-    loss_function = AutoscaleFocalLoss(threshold = 2)
+#     ##Define loss function
+#     loss_function = AutoscaleFocalLoss(threshold = 2)
     
-    #targets shape: [batch_size,]
-    if mode == 'train':
-        targets = targets.squeeze(-1)
+#     #targets shape: [batch_size,]
+#     if mode == 'train':
+#         targets = targets.squeeze(-1)
 
-    if torch.cuda.is_available():
-        targets = targets.to(torch.long).cuda()
-        logits = logits.cuda()
+#     if torch.cuda.is_available():
+#         targets = targets.to(torch.long).cuda()
+#         logits = logits.cuda()
 
-    loss = loss_function(logits = logits, labels = targets)
+#     loss = loss_function(logits = logits, labels = targets)
 
-    return loss
+#     return loss
 
 # class FeedForward(nn.Module):
 #     def __init__(self, d_model, d_ff=8192, dropout = 0.1):
@@ -226,8 +226,8 @@ net.to(device)
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.9)
 # optimizer = optim.Adam(net.parameters(), lr=0.0001, weight_decay= 1e-4)
-optimizer = torch.optim.AdamW(net.parameters(), lr=0.0001, weight_decay=0.01, amsgrad=False)
-scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[7000], gamma=0.1)
+optimizer = torch.optim.AdamW(net.parameters(), lr=0.001, weight_decay=0.01, amsgrad=False)
+# scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10000,14000,18000], gamma=0.1)
 
 print(net)
 
@@ -246,7 +246,7 @@ def multi_acc(y_pred, y_test):
 
 print("Begin training.")
 
-
+last_loss = 1000
 for epoch in range(1, EPOCHS+1):
 
     # TRAINING
@@ -306,7 +306,6 @@ for epoch in range(1, EPOCHS+1):
     loss_stats['train'].append(train_epoch_loss/len(trainloader))
     loss_stats['val'].append(val_epoch_loss/len(testloader))
     f1 = f1_score(y_test, y_pred_list, average='macro')
-
     f1_score_stats.append(f1)  
     # accTrain_e = train_epoch_acc/len(trainloader)
     # accVal_e = val_epoch_acc/len(testloader)
@@ -326,6 +325,18 @@ for epoch in range(1, EPOCHS+1):
     # print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | Train Acc: {train_epoch_acc/len(trainloader):.3f}| Val Acc: {val_epoch_acc/len(testloader):.3f}')
     if epoch%50==0:
         print(f'Epoch {epoch+0:04}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
+    current_loss = val_epoch_loss/len(testloader)
+    if current_loss > last_loss:
+        last_loss = current_loss 
+        trigger_times += 1
+        print('Trigger Times:', trigger_times)
+
+        if trigger_times >= patience:
+            print(f'Early stopping at epoch {epoch}!')
+            break
+    else:
+        print('trigger times: 0')
+        trigger_times = 0
 state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': f1}
 torch.save(state, checkpoint_last_path)
 print('Finished Training')
