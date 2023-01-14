@@ -46,8 +46,8 @@ checkpoint_last_path="checkpoints/ckp_bin_last.pt"
 train_acc_MAX=0
 # val_acc_MAX = 0
 best_f1_score = 0
-EPOCHS = 5000
-batch_size = 128
+EPOCHS =10000
+batch_size = 246
 trainloader = []
 testloader = []
 
@@ -226,7 +226,7 @@ net.to(device)
 criterion = nn.CrossEntropyLoss()
 # optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.9)
 # optimizer = optim.Adam(net.parameters(), lr=0.0001, weight_decay= 1e-4)
-optimizer = torch.optim.AdamW(net.parameters(), lr=0.001, weight_decay=0.01, amsgrad=False)
+optimizer = torch.optim.AdamW(net.parameters(), lr=0.0001, weight_decay=0.01, amsgrad=False)
 # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10000,14000,18000], gamma=0.1)
 
 print(net)
@@ -248,7 +248,11 @@ print("Begin training.")
 
 last_loss = 1000
 trigger_times = 0
+<<<<<<< HEAD
 patience = 5 
+=======
+patience = 5
+>>>>>>> 3906940460ae85f2b3c467bb99f90926a1a70598
 for epoch in range(1, EPOCHS+1):
 
     # TRAINING
@@ -328,7 +332,11 @@ for epoch in range(1, EPOCHS+1):
     # print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | Train Acc: {train_epoch_acc/len(trainloader):.3f}| Val Acc: {val_epoch_acc/len(testloader):.3f}')
     if epoch%50==0:
         print(f'Epoch {epoch+0:04}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 3906940460ae85f2b3c467bb99f90926a1a70598
     if current_loss > last_loss:
         last_loss = current_loss 
         trigger_times += 1
@@ -339,6 +347,7 @@ for epoch in range(1, EPOCHS+1):
             break
     else:
         trigger_times = 0
+        last_loss = current_loss 
 state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': f1}
 torch.save(state, checkpoint_last_path)
 print('Finished Training')
