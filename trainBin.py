@@ -336,7 +336,6 @@ for epoch in range(1, EPOCHS+1):
             print(f'Early stopping at epoch {epoch}!')
             break
     else:
-        print('trigger times: 0')
         trigger_times = 0
 state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': f1}
 torch.save(state, checkpoint_last_path)
