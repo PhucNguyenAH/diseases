@@ -1,0 +1,35 @@
+2023-01-13,18:13:33 - train.py - line:243 - INFO:	train acc:78.5, val acc: 78.5
+2023-01-13,18:18:37 - train.py - line:243 - INFO:	train acc:81.0, val acc: 81.0
+2023-01-13,18:37:44 - train.py - line:243 - INFO:	train acc:80.0, val acc: 80.0
+2023-01-13,19:00:20 - train.py - line:248 - INFO:	train acc:76.0, val acc: 76.0
+2023-01-13,19:07:10 - train.py - line:251 - INFO:	train acc:71.0, val acc: 71.0
+2023-01-13,20:27:01 - train.py - line:290 - INFO:	train acc:80.5, val acc: 80.5
+2023-01-13,20:32:11 - train.py - line:290 - INFO:	train acc:80.0, val acc: 80.0
+2023-01-13,20:45:09 - train.py - line:290 - INFO:	train acc:80.5, val acc: 80.5
+2023-01-13,20:47:14 - train.py - line:290 - INFO:	train acc:84.5, val acc: 84.5
+2023-01-13,21:02:19 - train.py - line:298 - INFO:	train acc:91.8125, val acc: 80.5
+2023-01-13,21:50:53 - train.py - line:317 - INFO:	best f1 score:5.038256346050464
+2023-01-13,21:51:12 - train.py - line:317 - INFO:	best f1 score:7.19034090909091
+2023-01-13,21:51:29 - train.py - line:317 - INFO:	best f1 score:7.797673253848053
+2023-01-13,21:52:39 - train.py - line:317 - INFO:	best f1 score:5.5025555000555
+2023-01-13,21:55:09 - train.py - line:317 - INFO:	best f1 score:11.904151034151033
+2023-01-13,22:03:39 - train.py - line:317 - INFO:	best f1 score:11.718481518481518
+2023-01-13,22:11:48 - train.py - line:317 - INFO:	best f1 score:1.7669083941800663
+2023-01-13,22:14:23 - train.py - line:317 - INFO:	best f1 score:0.7416666666666667
+2023-01-13,22:19:06 - train.py - line:317 - INFO:	best f1 score:0.7868080993080994
+2023-01-13,22:33:33 - train.py - line:317 - INFO:	best f1 score:0.7969614209320093
+2023-01-13,23:00:35 - train.py - line:340 - INFO:	best f1 score:0.7886472372240872
+2023-01-13,23:22:55 - train.py - line:340 - INFO:	best f1 score:0.7771164021164022
+2023-01-13,23:37:10 - train.py - line:344 - INFO:	best f1 score:0.7374643874643875
+2023-01-13,23:53:51 - train.py - line:344 - INFO:	best f1 score:0.7578643578643578
+2023-01-13,23:58:48 - train.py - line:344 - INFO:	best f1 score:0.7870675620675621
+2023-01-14,00:04:29 - train.py - line:344 - INFO:	best f1 score:0.7870675620675621
+2023-01-14,00:17:37 - train.py - line:344 - INFO:	best f1 score:0.7237253487253487
+2023-01-14,00:20:12 - train.py - line:344 - INFO:	best f1 score:0.7460622710622711
+2023-01-14,00:24:35 - train.py - line:344 - INFO:	best f1 score:0.6918294668294669
+2023-01-14,10:19:21 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
+2023-01-14,10:22:58 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
+2023-01-14,10:24:44 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
+2023-01-14,10:26:17 - train.py - line:344 - INFO:	best f1 score:0.8532608695652173
+2023-01-14,10:28:42 - train.py - line:344 - INFO:	best f1 score:0.9333333333333333
+2023-01-14,10:32:35 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
