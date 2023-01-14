@@ -100,41 +100,41 @@ testloader = DataLoader(dataset=test_dataset, batch_size=1)
 #     testloader.append([i,j])
 # testloader = torch.utils.data.DataLoader(testloader, shuffle=True, batch_size=batch_size)
 
-# class AutoscaleFocalLoss:
-#     def __init__(self, threshold):
-#         self.threshold = threshold
+class AutoscaleFocalLoss:
+    def __init__(self, threshold):
+        self.threshold = threshold
     
-#     def gamma(self, logits):
-#         return self.threshold/2 * (torch.cos(np.pi*(logits+1)) + 1)
+    def gamma(self, logits):
+        return self.threshold/2 * (torch.cos(np.pi*(logits+1)) + 1)
 
-#     def __call__(self, logits, labels):
-#         labels = F.one_hot(labels, 2)
+    def __call__(self, logits, labels):
+        labels = F.one_hot(labels, 2)
         
-#         assert logits.shape == labels.shape, \
-#                 "Mismatch in shape, logits.shape: {} - labels.shape: {}".format(logits.shape, labels.shape)
-#         logits =  F.softmax(logits, dim=-1)
-#         CE = - labels * torch.log(logits)
-#         loss = ((1 - logits)**self.gamma(logits)) * CE
-#         loss = torch.sum(loss, dim=-1).mean()
-#         return loss
+        assert logits.shape == labels.shape, \
+                "Mismatch in shape, logits.shape: {} - labels.shape: {}".format(logits.shape, labels.shape)
+        logits =  F.softmax(logits, dim=-1)
+        CE = - labels * torch.log(logits)
+        loss = ((1 - logits)**self.gamma(logits)) * CE
+        loss = torch.sum(loss, dim=-1).mean()
+        return loss
 
 
-# def calculate_preference_loss(logits, targets, mode='train'):
+def calculate_preference_loss(logits, targets, mode='train'):
 
-#     ##Define loss function
-#     loss_function = AutoscaleFocalLoss(threshold = 2)
+    ##Define loss function
+    loss_function = AutoscaleFocalLoss(threshold = 2)
     
-#     #targets shape: [batch_size,]
-#     if mode == 'train':
-#         targets = targets.squeeze(-1)
+    #targets shape: [batch_size,]
+    if mode == 'train':
+        targets = targets.squeeze(-1)
 
-#     if torch.cuda.is_available():
-#         targets = targets.to(torch.long).cuda()
-#         logits = logits.cuda()
+    if torch.cuda.is_available():
+        targets = targets.to(torch.long).cuda()
+        logits = logits.cuda()
 
-#     loss = loss_function(logits = logits, labels = targets)
+    loss = loss_function(logits = logits, labels = targets)
 
-#     return loss
+    return loss
 
 # class FeedForward(nn.Module):
 #     def __init__(self, d_model, d_ff=8192, dropout = 0.1):
