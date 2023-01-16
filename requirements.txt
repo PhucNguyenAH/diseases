@@ -6,3 +6,4 @@ torch
 torchvision
 seaborn
 tqdm
+onnxruntime

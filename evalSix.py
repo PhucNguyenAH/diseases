@@ -11,8 +11,8 @@ from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 from sklearn.metrics import confusion_matrix, classification_report
 
 class2idx = {
-    "control":0,
-    "CRC":1,
+    "CRC":0,
+    "Control":1,
     "Lung":2,
     "Gastric":3,
     "Liver":4,
@@ -24,20 +24,20 @@ idx2class = {v: k for k, v in class2idx.items()}
 num_features = 8630
 n_hidden_1 = 8192
 n_hidden_2 = 2048
-n_hidden_3 = 512
-num_classes = 2
+n_hidden_3 = 128
+num_classes = 6
 testloader = []
-checkpoint_path="checkpoints/ckp_bin.pt"
-checkpoint_last_path="checkpoints/ckp_bin_last.pt"
+checkpoint_path="checkpoints/ckp_six.pt"
+checkpoint_last_path="checkpoints/ckp_six_last.pt"
 
-with open('data/val_bin.npy', 'rb') as f:
+with open('data/val_six.npy', 'rb') as f:
     x_test0 = np.load(f)
-with open('data/val_bin_target.npy', 'rb') as f:
+with open('data/val_six_target.npy', 'rb') as f:
     y_test0 = np.load(f)
 
-with open('data/test_bin.npy', 'rb') as f:
+with open('data/test_six.npy', 'rb') as f:
     x_test1 = np.load(f)
-with open('data/test_bin_target.npy', 'rb') as f:
+with open('data/test_six_target.npy', 'rb') as f:
     y_test1 = np.load(f)
 
 x_test = np.concatenate([x_test0, x_test1])
@@ -110,5 +110,5 @@ y_pred_list = [a.squeeze().tolist() for a in y_pred_list]
 
 confusion_matrix_df = pd.DataFrame(confusion_matrix(y_test, y_pred_list)).rename(columns=idx2class, index=idx2class)
 fig = sns.heatmap(confusion_matrix_df, annot=True)
-fig.get_figure().savefig("confusion_matrix_bin.jpg")
+fig.get_figure().savefig("confusion_matrix_six.jpg")
 print(classification_report(y_test, y_pred_list))
