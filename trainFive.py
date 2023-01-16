@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn import preprocessing
 import numpy as np
-from models import Bin
+from models import Five
 from sklearn.model_selection import train_test_split
 import torch
 import torchvision
@@ -27,25 +27,24 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-with open('data/train_bin.npy', 'rb') as f:
+with open('data/train_five.npy', 'rb') as f:
     x_train = np.load(f)
-with open('data/train_bin_target.npy', 'rb') as f:
+with open('data/train_five_target.npy', 'rb') as f:
     y_train = np.load(f)
 
-with open('data/val_bin.npy', 'rb') as f:
+with open('data/val_five.npy', 'rb') as f:
     x_test = np.load(f)
-with open('data/val_bin_target.npy', 'rb') as f:
+with open('data/val_five_target.npy', 'rb') as f:
     y_test = np.load(f)
 
 x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
 
-
-model_file_path = "checkpoints/ckp_bin.pt"
-checkpoint_last_path="checkpoints/ckp_bin_last.pt"
+model_file_path = "checkpoints/ckp_five.pt"
+checkpoint_last_path="checkpoints/ckp_five_last.pt"
 
 train_acc_MAX=0
 best_f1_score = 0
-EPOCHS =10000
+EPOCHS = 10000
 batch_size = 128
 trainloader = []
 testloader = []
@@ -85,8 +84,7 @@ class AutoscaleFocalLoss:
         return self.threshold/2 * (torch.cos(np.pi*(logits+1)) + 1)
 
     def __call__(self, logits, labels):
-        labels = F.one_hot(labels, 2)
-        
+        labels = F.one_hot(labels, 5)
         assert logits.shape == labels.shape, \
                 "Mismatch in shape, logits.shape: {} - labels.shape: {}".format(logits.shape, labels.shape)
         logits =  F.softmax(logits, dim=-1)
@@ -115,7 +113,7 @@ def calculate_preference_loss(logits, targets, mode='train'):
 
 use_cuda = torch.cuda.is_available()  #GPU cuda
 
-net = Bin()
+net = Five()
 device = "cpu"
 if torch.cuda.is_available():
     device = "cuda:0"
@@ -125,15 +123,14 @@ print(device)
 net.to(device)
 
 criterion = nn.CrossEntropyLoss()
-# optimizer = optim.SGD(net.parameters(), lr=0.0001, momentum=0.9)
+# optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 # optimizer = optim.Adam(net.parameters(), lr=0.0001, weight_decay= 1e-4)
 optimizer = torch.optim.AdamW(net.parameters(), lr=0.0001, weight_decay=0.01, amsgrad=False)
-# scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10000,14000,18000], gamma=0.1)
+# scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=1000, eta_min=0, last_epoch=-1, verbose=False)
 
 print(net)
 
 print("Begin training.")
-
 for epoch in range(1, EPOCHS+1):
 
     # TRAINING
@@ -158,10 +155,11 @@ for epoch in range(1, EPOCHS+1):
         # scheduler.step()
         train_epoch_loss += train_loss.item()
 
-        # VALIDATION    
+    # VALIDATION    
     with torch.no_grad():
     
         val_epoch_loss = 0
+        # val_epoch_acc = 0
         
         net.eval()
         for X_val_batch, y_val_batch in testloader:
@@ -176,21 +174,23 @@ for epoch in range(1, EPOCHS+1):
             val_loss = calculate_preference_loss(y_val_pred, y_val_batch, mode='val')
             
             val_epoch_loss += val_loss.item()
+            # val_epoch_acc += val_acc.item()
     y_pred_list = [a.squeeze().tolist() for a in y_pred_list]
     loss_stats['train'].append(train_epoch_loss/len(trainloader))
     loss_stats['val'].append(val_epoch_loss/len(testloader))
     f1 = f1_score(y_test, y_pred_list, average='macro')
-    f1_score_stats.append(f1)  
 
+    f1_score_stats.append(f1)  
+   
     current_loss = val_epoch_loss/len(testloader)
     if f1 >= best_f1_score:
         best_f1_score = f1
         state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': best_f1_score}
         torch.save(state, model_file_path)
     lr = optimizer.param_groups[0]['lr']
-    if epoch%50==0:
-        print(f'Epoch {epoch+0:04}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
-
+    if epoch%10==0:
+        print(f'Epoch {epoch+0:03}: | LR: {lr:.5f} | Train Loss: {train_epoch_loss/len(trainloader):.5f} | Val Loss: {val_epoch_loss/len(testloader):.5f} | F1 score: {f1:.3f}')
+        
 state = {'net': net.state_dict(), 'optimizer': optimizer.state_dict(), 'epoch':epoch, 'f1': f1}
 torch.save(state, checkpoint_last_path)
 print('Finished Training')
@@ -198,6 +198,7 @@ print('Finished Training')
 train_val_loss_df = pd.DataFrame.from_dict(loss_stats).reset_index().melt(id_vars=['index']).rename(columns={"index":"epochs"})
 # Plot the dataframes
 loss_plot = sns.lineplot(data=train_val_loss_df, x = "epochs", y="value", hue="variable").set_title('Train-Val Loss/Epoch')
-loss_plot.get_figure().savefig("train_monitor.png")
+loss_plot.get_figure().savefig("train_monitor_five.png")
+
 
 logger.info(f"best f1 score:{best_f1_score}")

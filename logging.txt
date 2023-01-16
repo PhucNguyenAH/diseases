@@ -35,3 +35,14 @@
 2023-01-14,10:32:35 - train.py - line:344 - INFO:	best f1 score:0.9429175475687104
 2023-01-14,13:03:45 - trainBin.py - line:346 - INFO:	best f1 score:0.8772727272727274
 2023-01-14,16:40:33 - trainBin.py - line:359 - INFO:	best f1 score:1.0
+<<<<<<< HEAD
+>>>>>>> 3906940460ae85f2b3c467bb99f90926a1a70598
+2023-01-14,17:57:34 - trainFive.py - line:353 - INFO:	best f1 score:0.31174603174603177
+2023-01-14,18:02:48 - trainFive.py - line:353 - INFO:	best f1 score:0.6944877344877345
+2023-01-14,18:18:51 - trainFive.py - line:370 - INFO:	best f1 score:0.6944877344877345
+2023-01-14,19:10:08 - trainFive.py - line:368 - INFO:	best f1 score:0.7454545454545454
+2023-01-14,21:48:49 - trainFive.py - line:370 - INFO:	best f1 score:0.6944877344877345
+2023-01-15,00:00:01 - trainFive.py - line:369 - INFO:	best f1 score:0.7308513708513709
+2023-01-16,18:51:28 - trainSix.py - line:251 - INFO:	best f1 score:0.850108225108225
+=======
+>>>>>>> 367f00de35db0b5a54a4637634d5ee7c6d61e23a
