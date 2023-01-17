@@ -37,7 +37,7 @@ with open('data/val_bin_target.npy', 'rb') as f:
 
 x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
 
-svm_ = svm.SVC(kernel='linear', C=1.0)
+svm_ = svm.SVC(kernel='linear', C=1.0, probability=True)
 rf = RandomForestClassifier(criterion='gini', n_estimators=50)
 knn = KNeighborsClassifier(n_neighbors=1)
 
@@ -61,6 +61,6 @@ print(f'KNN: {f1_knn}')
 filename = 'checkpoints/ml_svm_bin.sav'
 pickle.dump(svm_, open(filename, 'wb'))
 filename = 'checkpoints/ml_rf_bin.sav'
-pickle.dump(svm_, open(filename, 'wb'))
+pickle.dump(rf, open(filename, 'wb'))
 filename = 'checkpoints/ml_knn_bin.sav'
-pickle.dump(svm_, open(filename, 'wb'))
+pickle.dump(knn, open(filename, 'wb'))
