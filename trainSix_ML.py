@@ -36,7 +36,7 @@ with open('data/val_six_target.npy', 'rb') as f:
 
 x_train, x_test = np.array(x_train, np.float32), np.array(x_test, np.float32)
 
-svm_ = svm.SVC(kernel='poly', C=1.0)
+svm_ = svm.SVC(kernel='poly', C=1.0, probability=True)
 rf = RandomForestClassifier(criterion='gini', n_estimators=3000)
 knn = KNeighborsClassifier(n_neighbors=5)
 
@@ -60,6 +60,6 @@ print(f'KNN: {f1_knn}')
 filename = 'checkpoints/ml_svm_six.sav'
 pickle.dump(svm_, open(filename, 'wb'))
 filename = 'checkpoints/ml_rf_six.sav'
-pickle.dump(svm_, open(filename, 'wb'))
+pickle.dump(rf, open(filename, 'wb'))
 filename = 'checkpoints/ml_knn_six.sav'
-pickle.dump(svm_, open(filename, 'wb'))
+pickle.dump(knn, open(filename, 'wb'))
